@@ -8,6 +8,7 @@ router.post('/movieCast', castController.movieCast)
 router.post('/castDetails', castController.castDetails)
 router.post('/castMovies', castController.castMovies)
 router.post('/updatePopularity', castController.updatePopularity)
+router.post('/getCastByName', castController.getCastByName)
 
 
 module.exports = router

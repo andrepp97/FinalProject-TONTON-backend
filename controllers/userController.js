@@ -102,7 +102,7 @@ module.exports = {
                 var token = createJWTToken({
                     ...results[0]
                 }, {
-                    expiresIn: '1h'
+                    expiresIn: '3h'
                 })
 
                 res.status(200).send({
@@ -134,7 +134,7 @@ module.exports = {
                 return res.status(500).send({ message: 'Email or Password Incorrect' })
             }
 
-            var token = createJWTToken({ ...results[0] }, { expiresIn: '1h' })
+            var token = createJWTToken({ ...results[0] }, { expiresIn: '3h' })
             console.log(token)
             res.status(200).send({ ...results[0], token })
         })

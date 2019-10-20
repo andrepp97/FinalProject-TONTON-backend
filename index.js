@@ -12,11 +12,18 @@ app.use(cors())
 app.use(bearerToken())
 app.use(express.static('public'))
 
-const { userRouter, movieRouter, castRouter } = require('./routers')
+
+const {
+    userRouter,
+    movieRouter,
+    castRouter,
+    watchlistRouter
+} = require('./routers')
 
 app.use('/user', userRouter)
 app.use('/movie', movieRouter)
 app.use('/cast', castRouter)
+app.use('/watchlist', watchlistRouter)
 
 
 app.listen(port, () => console.log('API aktif di port ' + port))

@@ -3,10 +3,13 @@ const { movieController } = require('../controllers')
 
 const router = express.Router()
 
-router.get('/moviePoster', movieController.moviePoster)
-router.get('/moviePosterNew', movieController.moviePosterNew)
-router.get('/movies/:idMov', movieController.movieData)
-router.get('/getGenre/:idMov', movieController.getMovieGenre)
+router.post('/moviePoster', movieController.moviePoster)
+router.post('/moviePosterPopular', movieController.moviePosterPopular)
+router.post('/moviePosterNew', movieController.moviePosterNew)
+router.post('/movies', movieController.movieData)
+router.post('/getGenre', movieController.getMovieGenre)
+router.post('/getMovieUrl', movieController.getMovieUrl)
+router.post('/getMoviesByName', movieController.getMoviesByName)
 
 
 module.exports = router

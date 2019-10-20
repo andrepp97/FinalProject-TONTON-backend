@@ -26,7 +26,6 @@ module.exports = {
             if (err) {
                 res.status(500).send(err)
             }
-            console.log(results)
             res.status(200).send(results)
         })
     },
@@ -73,6 +72,17 @@ module.exports = {
 
                 res.status(200).send('Popularity Increased!')
             })
+        })
+    },
+
+    getCastByName: (req, res) => {
+        let sql = `SELECT * FROM m_cast WHERE castName like '%${req.body.q}%'`
+
+        sqlDB.query(sql, (err, results) => {
+            if (err) {
+                res.status(500).send(err)
+            }
+            res.status(200).send(results)
         })
     }
 }
