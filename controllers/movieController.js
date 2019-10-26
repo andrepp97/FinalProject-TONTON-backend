@@ -106,5 +106,15 @@ module.exports = {
 
             res.status(200).send(results)
         })
+    },
+
+    getAllMovies: (req, res) => {
+        let sql = `SELECT * FROM m_movies`
+
+        sqlDB.query(sql, (err, results) => {
+            if (err) res.status(500).send(err)
+
+            res.status(200).send(results)
+        })
     }
 }

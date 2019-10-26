@@ -128,8 +128,7 @@ module.exports = {
                 res.status(500).send(err)
             }
 
-            console.log('Hasil Bro')
-            console.log(results)
+            // console.log(results)
             if(results.length === 0) {
                 return res.status(500).send({ message: 'Email or Password Incorrect' })
             }

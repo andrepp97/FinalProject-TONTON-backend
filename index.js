@@ -17,13 +17,15 @@ const {
     userRouter,
     movieRouter,
     castRouter,
-    watchlistRouter
+    watchlistRouter,
+    adminRouter
 } = require('./routers')
 
 app.use('/user', userRouter)
 app.use('/movie', movieRouter)
 app.use('/cast', castRouter)
 app.use('/watchlist', watchlistRouter)
+app.use('/admin', adminRouter)
 
 
 app.listen(port, () => console.log('API aktif di port ' + port))
