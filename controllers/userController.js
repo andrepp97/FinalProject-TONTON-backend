@@ -8,7 +8,7 @@ const secret = 'sutrisno'
 module.exports = {
     signup: (req, res) => {
         // APPEND TO REQ.BODY //
-        req.body.roleId = 2
+        req.body.roleId = 3
         req.body.created_date = new Date()
         req.body.updated_date = null
         req.body.status = 'Unverified'

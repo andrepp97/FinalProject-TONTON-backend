@@ -32,5 +32,19 @@ module.exports = {
 
             res.status(200).send(results)
         })
+    },
+
+    getUserWatchlist: (req, res) => {
+        let sql = `SELECT idMov, movieName, poster, w.created_date
+                    FROM user_watchlist w
+                    JOIN m_movies m ON m.id = w.idMov
+                    WHERE idUser = ${req.body.idUser}
+                    ORDER BY 4 DESC`
+
+        sqlDB.query(sql, (err, results) => {
+            if (err) res.status(500).send(err)
+
+            res.status(200).send(results)
+        })
     }
 }

@@ -10,6 +10,5 @@ router.post('/movies', movieController.movieData)
 router.post('/getGenre', movieController.getMovieGenre)
 router.post('/getMovieUrl', movieController.getMovieUrl)
 router.post('/getMoviesByName', movieController.getMoviesByName)
-router.get('/getAllMovies', movieController.getAllMovies)
 
 module.exports = router
