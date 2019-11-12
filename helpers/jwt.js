@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 module.exports = {
     createJWTToken: (payload) => {
         return jwt.sign(payload, 'sutrisno', {
-            expiresIn: '3h'
+            expiresIn: '12h'
         })
     }
 }

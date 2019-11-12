@@ -6,7 +6,7 @@ module.exports = {
                     WHERE idUser = ${req.body.idUser} AND idMov = ${req.body.idMov}`
 
         sqlDB.query(sql, req.body, (err, results) => {
-            if (err) res.status(500).send(err)
+            if (err) return res.status(500).send(err)
 
             res.status(200).send(results)
         })
@@ -17,7 +17,7 @@ module.exports = {
         let sql = `INSERT INTO user_watchlist SET ?`
 
         sqlDB.query(sql, req.body, (err, results) => {
-            if (err) res.status(500).send(err)
+            if (err) return res.status(500).send(err)
 
             res.status(200).send(results)
         })
@@ -28,7 +28,7 @@ module.exports = {
                     WHERE idUser = ${req.body.idUser} AND idMov = ${req.body.idMov}`
 
         sqlDB.query(sql, req.body, (err, results) => {
-            if (err) res.status(500).send(err)
+            if (err) return res.status(500).send(err)
 
             res.status(200).send(results)
         })
@@ -42,7 +42,7 @@ module.exports = {
                     ORDER BY 4 DESC`
 
         sqlDB.query(sql, (err, results) => {
-            if (err) res.status(500).send(err)
+            if (err) return res.status(500).send(err)
 
             res.status(200).send(results)
         })

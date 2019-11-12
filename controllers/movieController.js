@@ -85,7 +85,7 @@ module.exports = {
     },
 
     getMovieUrl: (req, res) => {
-        let sql = `SELECT filePath FROM m_movies WHERE id = ${req.body.idMov}`
+        let sql = `SELECT filePath, poster FROM m_movies WHERE id = ${req.body.idMov}`
 
         sqlDB.query(sql, (err, results) => {
             if (err) res.status(500).send(err)
