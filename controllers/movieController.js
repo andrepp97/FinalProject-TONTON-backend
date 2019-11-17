@@ -8,7 +8,7 @@ module.exports = {
 
         sqlDB.query(sql, (err, results) => {
             if (err) {
-                res.status(500).send(err)
+                return res.status(500).send(err)
             }
             res.status(200).send(results)
         })
@@ -24,7 +24,7 @@ module.exports = {
 
         sqlDB.query(sql, (err, results) => {
             if (err) {
-                res.status(500).send(err)
+                return res.status(500).send(err)
             }
             res.status(200).send(results)
         })
@@ -38,14 +38,13 @@ module.exports = {
 
         sqlDB.query(sql, (err, results) => {
             if (err) {
-                res.status(500).send(err)
+                return res.status(500).send(err)
             }
             res.status(200).send(results)
         })
     },
 
     movieData: (req, res) => {
-        console.log(req.body.idMov)
         let sql = `SELECT id, movieName, filePath, trailer, poster, releaseDate, country, lang,
                     concat(hour(duration), 'h ', minute(duration), 'm') as duration, director, synopsis, type
                 FROM m_movies
@@ -53,7 +52,7 @@ module.exports = {
 
         sqlDB.query(sql, (err, results) => {
             if (err) {
-                res.status(500).send(err)
+                return res.status(500).send(err)
             }
             res.status(200).send(results)
         })
@@ -68,7 +67,7 @@ module.exports = {
 
         sqlDB.query(sql, (err, results) => {
             if (err) {
-                res.status(500).send(err)
+                return res.status(500).send(err)
             }
 
             // JOINING GENRES
@@ -79,18 +78,21 @@ module.exports = {
             genreTemp = genreTemp.slice(0, genreTemp.length - 2)
             // JOINING GENRES
 
-            console.log(genreTemp)
             res.status(200).send(genreTemp)
         })
     },
 
     getMovieUrl: (req, res) => {
-        let sql = `SELECT filePath, poster FROM m_movies WHERE id = ${req.body.idMov}`
+        let sql = `SELECT id, movieName, filePath, poster FROM m_movies WHERE id = ${req.body.idMov}`
 
         sqlDB.query(sql, (err, results) => {
-            if (err) res.status(500).send(err)
+            if (err) return res.status(500).send(err)
 
-            res.status(200).send(results[0])
+            if (results.length > 0) {
+                return res.status(200).send(results[0])
+            } else {
+                console.log(results)
+            }
         })
     },
 
@@ -102,9 +104,47 @@ module.exports = {
                     WHERE synopsis LIKE '%${req.body.q}%'`
 
         sqlDB.query(sql, (err, results) => {
-            if (err) res.status(500).send(err)
+            if (err) return res.status(500).send(err)
 
             res.status(200).send(results)
         })
-    }
+    },
+
+    calcMovieViews: (req, res) => {
+        let sql = `SELECT *
+                    FROM movie_views
+                    WHERE idMov = ${req.body.idMov} AND idUser = ${req.body.idUser}`
+
+        sqlDB.query(sql, (err, results) => {
+            if (err) return res.status(500).send(err)
+
+            console.log('Film ', results)
+            if (results.length > 0) {
+                let newCounter = Number(results[0].counter) + 1
+                let sql2 = `UPDATE movie_views
+                            SET counter = ${newCounter}
+                            WHERE idMov = ${req.body.idMov} AND idUser = ${req.body.idUser}`
+                sqlDB.query(sql2, (err, results) => {
+                    if (err) return res.status(500).send(err)
+
+                    sqlDB.query(sql, (err, results) => {
+                        if (err) return res.status(500).send(err)
+
+                        res.status(200).send(results[0])
+                    })
+                })
+            } else if (results.length < 1) {
+                let sql3 = `INSERT INTO movie_views VALUES (null, ${req.body.idMov}, ${req.body.idUser}, 1)`
+                sqlDB.query(sql3, (err, results) => {
+                    if (err) return res.status(500).send(err)
+
+                    sqlDB.query(sql, (err, results) => {
+                        if (err) return res.status(500).send(err)
+
+                        res.status(200).send(results[0])
+                    })
+                })
+            }
+        })
+    },
 }

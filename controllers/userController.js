@@ -30,20 +30,23 @@ module.exports = {
                 error: true
             })
             if (results.length > 0) {
-                return res.status(500).send('Email already used for another account')
+                return res.status(500).send('email used')
             }
 
             // Do insert if there is no duplicate email
             console.log(req.body)
-            var sql = `INSERT INTO m_users SET ?`
-            sqlDB.query(sql, req.body, (err, results) => {
-                if (err) return res.status(500).send({
-                    message: 'DB Error gan!',
-                    err
-                })
+            var sql2 = `INSERT INTO m_users SET ?`
+            sqlDB.query(sql2, req.body, (err, results) => {
+                if (err) {
+                    return res.status(500).send({
+                        message: 'Register Failed',
+                        err
+                    })
+                }
 
                 // Create TOKEN
                 const token = createJWTToken({ email: req.body.email })
+                console.log(token)
 
                 // Email Verification
                 var mailOptions = {
@@ -56,7 +59,7 @@ module.exports = {
                 transporter.sendMail(mailOptions, (err, results) => {
                     if (err) {
                         return res.status(500).send({
-                            message: 'Kirim Email Confirmation Gagal!',
+                            message: 'Send Email Failed',
                             err
                         })
                     }
@@ -74,7 +77,7 @@ module.exports = {
         })
 
         var mailOptions = {
-            from: "Son Of A Gun <andreputerap@gmail.com>",
+            from: "TONTON.ID <andreputerap@gmail.com>",
             to: req.body.email,
             subject: "Email Confirmation",
             html: `<h1>Bergabunglah Dengan Kami</h1>
@@ -143,8 +146,8 @@ module.exports = {
                 return res.status(500).send({ message: 'Email or Password Incorrect' })
             }
 
-            var token = createJWTToken({ ...results[0] }, { expiresIn: '3h' })
-            console.log(token)
+            var token = createJWTToken({ ...results[0] }, { expiresIn: '12h' })
+            // console.log(token)
             res.status(200).send({ ...results[0], token })
         })
     },

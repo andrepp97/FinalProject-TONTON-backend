@@ -81,7 +81,19 @@ module.exports = {
     },
 
     getAllArtist: (req, res) => {
-        let sql = `SELECT * FROM m_cast ORDER BY castName`
+        let sorting = ''
+        console.log(req.query.sort)
+        if (req.query.sort === 'asc' || req.query.sort === undefined) {
+            sorting = 'ORDER BY castName ASC'
+        }
+        if (req.query.sort === 'desc') {
+            sorting = 'ORDER BY castName DESC'
+        }
+        if (req.query.sort === 'popularity') {
+            sorting = 'ORDER BY popularity DESC'
+        }
+
+        let sql = `SELECT * FROM m_cast ${sorting}`
 
         sqlDB.query(sql, (err, results) => {
             if (err) {
