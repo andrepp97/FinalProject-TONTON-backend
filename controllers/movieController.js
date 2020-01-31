@@ -122,7 +122,7 @@ module.exports = {
             if (results.length > 0) {
                 let newCounter = Number(results[0].counter) + 1
                 let sql2 = `UPDATE movie_views
-                            SET counter = ${newCounter}
+                            SET counter = ${newCounter}, last_viewed = now()
                             WHERE idMov = ${req.body.idMov} AND idUser = ${req.body.idUser}`
                 sqlDB.query(sql2, (err, results) => {
                     if (err) return res.status(500).send(err)
@@ -134,7 +134,7 @@ module.exports = {
                     })
                 })
             } else if (results.length < 1) {
-                let sql3 = `INSERT INTO movie_views VALUES (null, ${req.body.idMov}, ${req.body.idUser}, 1)`
+                let sql3 = `INSERT INTO movie_views VALUES (null, ${req.body.idMov}, ${req.body.idUser}, 1, now())`
                 sqlDB.query(sql3, (err, results) => {
                     if (err) return res.status(500).send(err)
 

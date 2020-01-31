@@ -44,28 +44,53 @@ module.exports = {
                     })
                 }
 
-                // Create TOKEN
-                const token = createJWTToken({ email: req.body.email })
-                console.log(token)
-
-                // Email Verification
-                var mailOptions = {
-                    from: "TONTON.ID <andreputerap@gmail.com>",
-                    to: req.body.email,
-                    subject: "Email Confirmation",
-                    html: `<h1>Click Link Below to Confirm Your Email</h1>
-                    <h4><a href='http://localhost:3000/emailverified?token=${token}' target='_blank'>Click Me!!</a></h4>`
-                }
-                transporter.sendMail(mailOptions, (err, results) => {
+                var sql3 = `SELECT id FROM m_users ORDER BY id DESC LIMIT 1`
+                sqlDB.query(sql3, (err, results) => {
                     if (err) {
                         return res.status(500).send({
-                            message: 'Send Email Failed',
+                            message: 'SELECT Failed',
                             err
                         })
                     }
-                    console.log('Email Sent!')
-                    res.status(200).send(results)
+
+                    var sql4 = `INSERT INTO user_subs (idUser, idSubs, status)
+                                VALUES (${results[0].id}, 2, 'Active')`
+                    sqlDB.query(sql4, (err, results) => {
+                        if (err) {
+                            return res.status(500).send({
+                                message: 'Subs Failed',
+                                err
+                            })
+                        }
+
+                        // Create TOKEN
+                        const token = createJWTToken({
+                            email: req.body.email
+                        })
+                        console.log(token)
+
+                        // Email Verification
+                        var mailOptions = {
+                            from: "TONTON.ID <andreputerap@gmail.com>",
+                            to: req.body.email,
+                            subject: "Email Confirmation",
+                            html: `<h1>Click Link Below to Confirm Your Email</h1>
+                    <h4><a href='http://localhost:3000/emailverified?token=${token}' target='_blank'>Click Me!!</a></h4>`
+                        }
+                        transporter.sendMail(mailOptions, (err, results) => {
+                            if (err) {
+                                return res.status(500).send({
+                                    message: 'Send Email Failed',
+                                    err
+                                })
+                            }
+
+                            console.log('Email Sent!')
+                            res.status(200).send('Email Sent!')
+                        })
+                    })
                 })
+
             })
         })
     },
@@ -132,7 +157,7 @@ module.exports = {
                             .update(password)
                             .digest('hex')
 
-        let sql = `SELECT u.id, username, password, email, roleName
+        let sql = `SELECT u.id, username, password, email, roleName, status
                     FROM m_users u JOIN m_role r ON r.id = u.roleId
                     WHERE email = '${email}' AND password = '${password}'`
         
@@ -141,9 +166,12 @@ module.exports = {
                 res.status(500).send(err)
             }
 
-            // console.log(results)
             if(results.length === 0) {
-                return res.status(500).send({ message: 'Email or Password Incorrect' })
+                return res.status(403).send('NoResult')
+            }
+
+            if (results[0].status === 'Suspended') {
+                return res.status(403).send('Suspended')
             }
 
             var token = createJWTToken({ ...results[0] }, { expiresIn: '12h' })
@@ -160,6 +188,29 @@ module.exports = {
     },
 
     // SUBSCRIPTIONS //
+    calcUserSubs: (req, res) => {
+        var sql = `SELECT idUser, idSubs, subsName, status, timestampdiff(hour, now(), end_date) as 'remaining'
+                    FROM user_subs s
+                    JOIN m_subscription ms ON ms.id = s.idSubs
+                    WHERE idUser = ${sqlDB.escape(req.params.idUser)}`
+        sqlDB.query(sql, (err, results) => {
+            if (err) return res.status(500).send(err)
+
+            res.status(200).send(results[0])
+        })
+    },
+
+    userCancelPlan: (req, res) => {
+        var sql = `UPDATE user_subs
+                    SET idSubs = 2
+                    WHERE idUser = ${req.body.idUser}`
+        sqlDB.query(sql, (err, results) => {
+            if (err) return res.status(500).send(err)
+
+            res.status(200).send('Cancel Berhasil')
+        })
+    },
+
     getPriceData: (req, res) => {
         var sql = `SELECT pricePerMonth FROM m_subscription WHERE subsName = 'Premium'`
         sqlDB.query(sql, (err, results) => {
@@ -247,7 +298,7 @@ module.exports = {
 
             var sql = `UPDATE user_transaction
                         SET receipt = '${imgPath}'
-                        WHERE idUser = ${data.idUser} AND status = 'WAITING FOR PAYMENT'`
+                        WHERE idUser = ${data.idUser} AND (status = 'WAITING FOR PAYMENT' or status = 'DECLINED')`
             sqlDB.query(sql, (err, results) => {
                 if (err) {
                     fs.unlinkSync(`./public${imgPath}`)
@@ -256,7 +307,7 @@ module.exports = {
 
                 var sql2 = `UPDATE user_transaction
                             SET status = 'PROCESSING PAYMENT'
-                            WHERE idUser = ${data.idUser} AND status = 'WAITING FOR PAYMENT'`
+                            WHERE idUser = ${data.idUser} AND (status = 'WAITING FOR PAYMENT' or status = 'DECLINED')`
                  sqlDB.query(sql2, (err, results) => {
                     if (err) {
                         return res.status(500).send(err)

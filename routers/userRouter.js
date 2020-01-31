@@ -9,6 +9,8 @@ router.post('/resendemailconfirm', userController.resendEmailConfirm)
 router.post('/emailConfirmed', authEmail, userController.emailConfirmed)
 router.post('/userLogin', userController.userLogin)
 router.post('/userKeepLogin', auth, userController.userKeepLogin)
+router.get('/calcUserSubs/:idUser', userController.calcUserSubs)
+router.post('/userCancelPlan/', userController.userCancelPlan)
 
 router.post('/getPriceData', userController.getPriceData)
 router.post('/userUpgradePremium', userController.userUpgradePremium)

@@ -27,7 +27,7 @@ module.exports = {
         });
 
         const filterBro = (req, file, cb) => {
-            const ext = /\.(jpg|jpeg|png|gif|svg|bmp|pdf|mp4|mkv|avi|flv|rmvb|3gp)$/;
+            const ext = /\.(jpg|jpeg|png|gif|svg|bmp|pdf|mp4|mkv|avi|flv|rmvb)$/;
             if (!file.originalname.match(ext)) {
                 return cb(new Error('Only selected file type are allowed'), false);
             }

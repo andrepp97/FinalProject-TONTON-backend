@@ -21,6 +21,10 @@ const {
     adminRouter
 } = require('./routers')
 
+app.get('/', (req,res) => {
+    res.status(200).send('OKE BOSS')
+})
+
 app.use('/user', userRouter)
 app.use('/movie', movieRouter)
 app.use('/cast', castRouter)
